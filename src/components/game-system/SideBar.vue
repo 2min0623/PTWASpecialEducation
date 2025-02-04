@@ -150,6 +150,33 @@
         </div>
       </button>
       <button
+        class="btn btn-primary text-nowrap img-hover-zoom"
+        data-bs-toggle="modal"
+        data-bs-target="#Calculator"
+        @click="replayDrawing()"
+      >
+        <div class="d-flex align-items-center">
+          <div class="">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              fill="currentColor"
+              class="bi bi-play-circle"
+              viewBox="0 0 16 16"
+            >
+              <path
+                d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"
+              />
+              <path
+                d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445"
+              />
+            </svg>
+          </div>
+          <div class="mx-auto">回放計算</div>
+        </div>
+      </button>
+      <button
         v-if="GameStatus == 'NotStart'"
         class="btn btn-primary text-nowrap img-hover-zoom"
         data-bs-toggle="modal"
@@ -327,6 +354,7 @@ export default {
     "toCsv",
     "scratchSheet",
     "reappearCode",
+    "replayDrawing",
   ],
   data() {
     return {
@@ -423,6 +451,9 @@ export default {
         this.isFullScreen = true;
       }
     },
+    replayDrawing() {
+      this.$emit("replayDrawing");
+    },
   },
 };
 </script>
@@ -443,20 +474,23 @@ export default {
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
     justify-content: stretch;
+    overflow-y: auto;
+    padding: 0.5rem;
+
     button {
       align-self: center;
       width: 93%;
-      font-size: 1.2rem;
+      font-size: 1rem;
       border-radius: 12px;
-      height: 4rem;
-      padding: 0.4rem;
+      height: 3.5rem;
+      padding: 0.3rem;
 
       img {
-        height: 80%;
-        max-width: 40px;
-        max-height: 40px;
+        height: 70%;
+        max-width: 35px;
+        max-height: 35px;
       }
     }
   }

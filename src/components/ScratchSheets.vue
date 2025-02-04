@@ -14,6 +14,49 @@
         />
       </div>
 
+      <div v-if="isReplay" class="replay-controls">
+        <div class="replay-container">
+          <h3>回放控制</h3>
+          <input
+            type="file"
+            accept=".json"
+            class="file-input form-control"
+            @change="loadDrawingFile"
+          />
+          <div class="speed-control">
+            <label>播放速度：</label>
+            <select v-model="replaySpeed" class="form-select">
+              <option value="0.5">0.5x</option>
+              <option value="1">1x</option>
+              <option value="2">2x</option>
+            </select>
+          </div>
+          <div class="replay-buttons">
+            <button
+              class="btn btn-primary"
+              :disabled="!drawingData"
+              @click="startReplay"
+            >
+              播放
+            </button>
+            <button
+              class="btn btn-warning"
+              :disabled="!isPlaying"
+              @click="pauseReplay"
+            >
+              暫停
+            </button>
+            <button
+              class="btn btn-danger"
+              :disabled="!isPlaying"
+              @click="stopReplay"
+            >
+              停止
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="option-menu">
         <div class="option-container">
           <div class="btn-title">筆刷大小</div>
@@ -97,6 +140,12 @@
 <script>
 export default {
   name: "CanvasDrawing",
+  props: {
+    isReplay: {
+      type: Boolean,
+      default: false,
+    },
+  },
   emits: ["closeSheet"],
   data() {
     return {
@@ -112,6 +161,11 @@ export default {
       prevPinchDistance: 0,
       drawingActions: [],
       currentAction: null,
+      drawingData: null,
+      isPlaying: false,
+      replayTimeoutId: null,
+      replaySpeed: 1,
+      baseReplayDelay: 200,
     };
   },
   mounted() {
@@ -278,6 +332,79 @@ export default {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     },
+    async loadDrawingFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        this.drawingData = JSON.parse(text);
+      } catch (error) {
+        console.error("無法載入檔案:", error);
+        alert("無法載入檔案，請確認是否為有效的繪圖記錄檔案");
+      }
+    },
+    startReplay() {
+      if (!this.drawingData) return;
+      this.isPlaying = true;
+      this.clearCanvas();
+
+      let actionIndex = 0;
+      const replayAction = () => {
+        if (!this.isPlaying || actionIndex >= this.drawingData.actions.length) {
+          this.isPlaying = false;
+          return;
+        }
+
+        const action = this.drawingData.actions[actionIndex];
+        if (action.type === "draw") {
+          this.replayDrawAction(action);
+        } else if (action.type === "clear") {
+          this.clearCanvas();
+        }
+
+        actionIndex++;
+        const delay = this.baseReplayDelay / this.replaySpeed;
+        this.replayTimeoutId = setTimeout(replayAction, delay);
+      };
+
+      replayAction();
+    },
+    replayDrawAction(action) {
+      this.ctx.beginPath();
+      this.ctx.strokeStyle = action.color;
+      this.ctx.lineWidth = action.size;
+
+      const points = action.points;
+      if (points.length > 0) {
+        this.ctx.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+          if (i < points.length - 1) {
+            const xc = (points[i].x + points[i + 1].x) / 2;
+            const yc = (points[i].y + points[i + 1].y) / 2;
+            this.ctx.quadraticCurveTo(points[i].x, points[i].y, xc, yc);
+          } else {
+            this.ctx.lineTo(points[i].x, points[i].y);
+          }
+        }
+      }
+
+      this.ctx.stroke();
+      this.ctx.closePath();
+    },
+    pauseReplay() {
+      this.isPlaying = false;
+      if (this.replayTimeoutId) {
+        clearTimeout(this.replayTimeoutId);
+      }
+    },
+    stopReplay() {
+      this.isPlaying = false;
+      if (this.replayTimeoutId) {
+        clearTimeout(this.replayTimeoutId);
+      }
+      this.clearCanvas();
+    },
   },
 };
 </script>
@@ -435,5 +562,67 @@ canvas {
 
 button {
   border: none;
+}
+
+.replay-controls {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  width: 300px;
+}
+
+.replay-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  h3 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}
+
+.file-input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.replay-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+
+  button {
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: bold;
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.speed-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  label {
+    white-space: nowrap;
+  }
+
+  select {
+    width: 100px;
+  }
 }
 </style>

@@ -71,6 +71,13 @@
                   @scratchSheet="
                     () => {
                       scratchSheetVisible = true;
+                      isReplay = false;
+                    }
+                  "
+                  @replay-drawing="
+                    () => {
+                      scratchSheetVisible = true;
+                      isReplay = true;
                     }
                   "
                 />
@@ -111,6 +118,13 @@
             @scratchSheet="
               () => {
                 scratchSheetVisible = true;
+                isReplay = false;
+              }
+            "
+            @replay-drawing="
+              () => {
+                scratchSheetVisible = true;
+                isReplay = true;
               }
             "
             @reappear-code="reappearCode"
@@ -126,7 +140,11 @@
         </div>
       </div>
     </section>
-    <scratchSheet v-if="scratchSheetVisible" @close-sheet="closeSratchSheet" />
+    <scratchSheet
+      v-if="scratchSheetVisible"
+      :is-replay="isReplay"
+      @close-sheet="closeSratchSheet"
+    />
     <TechModal
       v-if="showMediaModal"
       :media-data="GameData.introvideo"
@@ -303,7 +321,7 @@ export default {
       questionCopy: [],
       isGif: false,
       showMediaModal: false,
-      // SentData2ChildComponent: {},
+      isReplay: false,
     };
   },
   computed: {
