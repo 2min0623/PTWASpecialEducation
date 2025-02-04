@@ -80,6 +80,7 @@
 
         <div class="operation-option">
           <button @click="clearCanvas" @touchend="clearCanvas">清空</button>
+          <button @click="saveDrawingToJSON">儲存</button>
         </div>
         <button
           class="exit-btn"
@@ -109,6 +110,8 @@ export default {
       offsetX: 0,
       offsetY: 0,
       prevPinchDistance: 0,
+      drawingActions: [],
+      currentAction: null,
     };
   },
   mounted() {
@@ -154,6 +157,14 @@ export default {
       this.ctx.moveTo(x, y);
       this.lastX = x;
       this.lastY = y;
+
+      this.currentAction = {
+        type: "draw",
+        color: this.brushColor,
+        size: this.brushSize,
+        points: [{ x, y }],
+        timestamp: Date.now(),
+      };
     },
     handleMouseMove(event) {
       if (!this.isDrawing) return;
@@ -166,10 +177,19 @@ export default {
       this.ctx.stroke();
       this.lastX = x;
       this.lastY = y;
+
+      if (this.currentAction) {
+        this.currentAction.points.push({ x, y });
+      }
     },
     handleMouseUp() {
       this.isDrawing = false;
       this.ctx.closePath();
+
+      if (this.currentAction) {
+        this.drawingActions.push(this.currentAction);
+        this.currentAction = null;
+      }
     },
     handleTouchStart(event) {
       event.preventDefault();
@@ -231,9 +251,32 @@ export default {
         this.$refs.canvas.width,
         this.$refs.canvas.height
       );
+      this.drawingActions.push({
+        type: "clear",
+        timestamp: Date.now(),
+      });
     },
     closeCanvas() {
       this.$emit("closeSheet");
+    },
+    saveDrawingToJSON() {
+      const drawingData = {
+        actions: this.drawingActions,
+        canvasWidth: this.$refs.canvas.width,
+        canvasHeight: this.$refs.canvas.height,
+      };
+
+      const jsonString = JSON.stringify(drawingData);
+
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `drawing-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
     },
   },
 };
@@ -365,7 +408,7 @@ canvas {
 .operation-option {
   width: 100%;
   display: flex;
-
+  gap: $gap--small;
   justify-content: center;
   flex-wrap: wrap;
 }
