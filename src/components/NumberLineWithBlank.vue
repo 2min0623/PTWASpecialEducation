@@ -238,8 +238,8 @@ export default {
     },
     updateMenuPosition(rect) {
       const containerRect = this.$refs.container.getBoundingClientRect();
-      const rectTop = containerRect.top + rect.y + rect.height;
-      const rectLeft = containerRect.left + rect.x;
+      const rectTop = containerRect.bottom + rect.y;
+      const rectLeft = containerRect.left + rect.x + rect.height;
 
       this.menuPosition = {
         top: rectTop + 10,
