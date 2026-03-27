@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <table class="number-board">
     <tr class="number-board__row">
       <td
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { subComponentsVerifyAnswer as emitter } from "@/utilitys/mitt.js";
+import { subComponentsVerifyAnswer as emitter } from "@/lib/mitt.js";
 
 export default {
   name: "NumberBoard",
@@ -132,6 +132,7 @@ export default {
   table-layout: fixed;
   border-collapse: collapse;
   max-width: 350px;
+  max-height: 300px;
 
   &__row {
     width: 100%;
