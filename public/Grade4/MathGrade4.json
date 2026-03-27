@@ -3,6 +3,69 @@
     "lableName": "上學期",
     "gameItem": [
       {
+        "Title": "待測試",
+        "Section": [
+          {
+            "Title": "1 - 一億以內的數",
+            "Games": [
+              {
+                "id": "MA4011",
+                "Name": "十萬以內的數",
+                "Description": "填填看",
+                "Img": "MA4011.png"
+              },
+              {
+                "id": "MA4012",
+                "Name": "讀音拼圖",
+                "Description": "把數字和讀音拼起來",
+                "Img": "MA4012.png"
+              },
+              {
+                "id": "MA4013",
+                "Name": "累加、累減",
+                "Description": "按照順序連起來",
+                "Img": "MA4013.png"
+              },
+              {
+                "id": "MA4014",
+                "Name": "位值判別",
+                "Description": "把一樣的配對起來",
+                "Img": "MA4014.png"
+              }
+            ]
+          },
+          {
+            "Title": "8 - 整數四則計算",
+            "Games": [
+              {
+                "id": "MA4081",
+                "Name": "加與減的併式(觀念題)",
+                "Description": "選選看正確的答案",
+                "Img": "MA4081.png"
+              },
+              {
+                "id": "MA4084",
+                "Name": "乘與除的併式(觀念題)",
+                "Description": "選選看正確的答案",
+                "Img": "MA4084.png"
+              },
+              {
+                "id": "MA4087",
+                "Name": "加減與乘的混合計算(概念釐清)",
+                "Description": "選選看正確的答案",
+                "Img": "MA4087.png"
+              },
+              {
+                "id": "MA408A",
+                "Name": "加減與除的混合計算(概念釐清)",
+                "Description": "選選看正確的答案",
+                "Img": "MA408A.png"
+              }
+            ]
+          }
+        ]
+      },
+      {
         "Title": "1 - 一億以內的數",
         "Section": [
           {
